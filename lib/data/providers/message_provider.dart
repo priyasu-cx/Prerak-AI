@@ -16,38 +16,42 @@ class MessageNotifier extends StateNotifier<List<Map<String, String>>> {
   void sendMessage(String message, String name) async {
     final reply = await receiveMessage(message, name);
     state = [...state, {'message': message, 'reply': reply}];
+    print(state);
   }
 
-  void clear() {
+  void clear(){
     state = [];
   }
 
   Future<String> receiveMessage(String message, String name) async {
-    final response = await http.post(
-      Uri.parse('https://api.openai.com/v1/chat/completions'),
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${dotenv.env['token']}',
-      },
-      body: jsonEncode({
-        "model": "gpt-3.5-turbo",
-        "messages": [
-          {
-            "role": "system",
-            "content": "Assume yourself as $name and answer the following questions."
+    try{
+      final response = await http.post(
+          Uri.parse('https://api.openai.com/v1/chat/completions'),
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': 'Bearer ${dotenv.env['token']}',
           },
-          {
-            "role": "user",
-            "content": message
-          }
-        ]
-      })
-    );
-
-    // print(response.body);
-
-    final responseModel = jsonDecode(response.body);
-    final answer = responseModel['choices'][0]['message']['content'];
-    return answer;
+          body: jsonEncode({
+            "model": "gpt-3.5-turbo",
+            "messages": [
+              {
+                "role": "system",
+                "content": "Assume yourself as $name and answer the following questions."
+              },
+              {
+                "role": "user",
+                "content": message
+              }
+            ]
+          })
+      );
+      print(response.body);
+      final responseModel = jsonDecode(response.body);
+      final answer = responseModel['choices'][0]['message']['content'];
+      return answer;
+    } catch(e){
+      print(e);
+      return "Sorry, I didn't get that.";
+    }
   }
 }
