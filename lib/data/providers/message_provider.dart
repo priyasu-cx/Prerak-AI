@@ -2,6 +2,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:riverpod/riverpod.dart';
 import 'package:http/http.dart' as http;
 
@@ -12,24 +13,28 @@ final messageProvider = StateNotifierProvider<MessageNotifier, List<Map<String, 
 class MessageNotifier extends StateNotifier<List<Map<String, String>>> {
   MessageNotifier() : super([]);
 
-  void sendMessage(String message) async {
-    final reply = await receiveMessage(message);
+  void sendMessage(String message, String name) async {
+    final reply = await receiveMessage(message, name);
     state = [...state, {'message': message, 'reply': reply}];
   }
 
-  Future<String> receiveMessage(String message) async {
+  void clear() {
+    state = [];
+  }
+
+  Future<String> receiveMessage(String message, String name) async {
     final response = await http.post(
       Uri.parse('https://api.openai.com/v1/chat/completions'),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': 'Bearer ${'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'}',
+        'Authorization': 'Bearer ${dotenv.env['token']}',
       },
       body: jsonEncode({
         "model": "gpt-3.5-turbo",
         "messages": [
           {
             "role": "system",
-            "content": "Assume yourself as Virat Kohli and answer the following questions."
+            "content": "Assume yourself as $name and answer the following questions."
           },
           {
             "role": "user",

@@ -13,12 +13,14 @@ class ChatScreen extends ConsumerWidget {
   Widget build(BuildContext context, WidgetRef ref) {
     final chat = ref.watch(messageProvider);
     final textController = TextEditingController();
+    final character = ModalRoute.of(context)!.settings.arguments as Map;
+    // print(character);
 
     return Scaffold(
         backgroundColor: PrerakAIColor.bgcolor,
         appBar: PreferredSize(
             preferredSize: Size.fromHeight(screenHeight! * 0.2),
-            child: ChatAppbar()),
+            child: ChatAppbar(character: character,)),
         body: Column(
           children: [
             Expanded(
@@ -36,7 +38,7 @@ class ChatScreen extends ConsumerWidget {
                       ...chat.map((chat) => Column(
                         children: [
                           CustomQues(message: chat['message']!),
-                          Answer(message: chat['reply']!,)
+                          Answer(message: chat['reply']!, image: character["Image"]!)
                         ],
                       )),
 
@@ -72,7 +74,7 @@ class ChatScreen extends ConsumerWidget {
                     ),
                   ),
                   IconButton(onPressed: (){
-                    ref.read(messageProvider.notifier).sendMessage(textController.text);
+                    ref.read(messageProvider.notifier).sendMessage(textController.text, character["Name"]!);
                     textController.clear();
                     FocusScope.of(context).unfocus();
                   }, icon: const Icon(Icons.send,color: Colors.white,))
@@ -101,9 +103,10 @@ class QuestionWidgets extends StatelessWidget {
 }
 
 class Answer extends StatelessWidget {
-  const Answer({super.key, required this.message});
+  const Answer({super.key, required this.message, required this.image});
 
   final String message;
+  final String image;
 
   @override
   Widget build(BuildContext context) {
@@ -114,7 +117,7 @@ class Answer extends StatelessWidget {
         children: [
           CircleAvatar(
             radius: 20,
-            backgroundImage: AssetImage(PrerakAIAssets.logo),
+            backgroundImage: NetworkImage(image),
           ),
           Expanded(
             child: Container(
@@ -179,7 +182,7 @@ class SuggesstionQues extends StatelessWidget {
               bottomRight: Radius.circular(20)),
           color: PrerakAIColor.chatbotcolor),
       child: Text(
-        "How do I maintain a strict fitness routine? How do I maintain a strict fitness routine?",
+        "How do I maintain a strict fitness routine?",
         style: TextStyle(
             color: Colors.white,
             fontSize: 14,
@@ -204,6 +207,9 @@ class CustomQues extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
           Container(
+            constraints: BoxConstraints(
+              maxWidth: screenWidth! * 0.65,
+            ),
             padding: const EdgeInsets.all(10),
             margin: const EdgeInsets.only(right: 10),
             decoration: BoxDecoration(
@@ -219,7 +225,7 @@ class CustomQues extends StatelessWidget {
           ),
           CircleAvatar(
             radius: 20,
-            backgroundImage: AssetImage(PrerakAIAssets.logo),
+            backgroundImage: NetworkImage("https://icons.veryicon.com/png/o/miscellaneous/two-color-icon-library/user-286.png"),
           ),
         ],
       ),

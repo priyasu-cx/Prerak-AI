@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:prerak_ai/data/character_data.dart';
 import 'package:prerak_ai/routes/route_path.dart';
 import 'package:prerak_ai/screens/home/widgets/questions.dart';
 import 'package:prerak_ai/utils/assets.dart';
@@ -60,14 +61,14 @@ class HomeScreen extends StatelessWidget {
                     return Container(
                       alignment: Alignment.center,
                       margin: const EdgeInsets.all(4),
-                      child: Text(
-                        "Category $index",
-                        style: const TextStyle(color: Colors.white),
-                      ),
                       width: screenWidth! * 0.3,
                       decoration: BoxDecoration(
                           borderRadius: BorderRadius.circular(8),
                           color: Colors.white.withOpacity(0.2)),
+                      child: Text(
+                        "Category $index",
+                        style: const TextStyle(color: Colors.white),
+                      ),
                     );
                   },
                 ),
@@ -77,31 +78,35 @@ class HomeScreen extends StatelessWidget {
                 height: screenHeight! * 0.3,
                 child: ListView.builder(
                   scrollDirection: Axis.horizontal,
-                  itemCount: 10,
+                  itemCount: ActorData.length,
                   itemBuilder: (BuildContext context, int index) {
                     return GestureDetector(
                       onTap: () {
-                        Navigator.of(context).pushNamed(RoutePath.routeChat);
+                        Navigator.of(context).pushNamed(RoutePath.routeChat, arguments: ActorData[index]);
                       },
                       child: Container(
                         alignment: Alignment.center,
                         margin: const EdgeInsets.all(4),
+                        width: screenWidth! * 0.55,
+                        decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(8),
+                            color: Colors.white.withOpacity(0.2)),
                         child: Column(
                           children: [
                             Padding(
                               padding: const EdgeInsets.all(15),
                               child: CircleAvatar(
                                 radius: 45,
-                                backgroundImage:
-                                    AssetImage(PrerakAIAssets.logo),
+                                backgroundImage: NetworkImage("${ActorData[index]["Image"]}")
+                                    // AssetImage(PrerakAIAssets.logo),
                               ),
                             ),
                             Text(
-                              "Actor $index",
+                              "${ActorData[index]["Name"]}",
                               style: const TextStyle(color: Colors.white),
                             ),
                             Text(
-                              "Designation",
+                              "${ActorData[index]["Designation"]}",
                               style: const TextStyle(color: Colors.grey),
                             ),
                             const Spacer(),
@@ -132,10 +137,6 @@ class HomeScreen extends StatelessWidget {
                             )
                           ],
                         ),
-                        width: screenWidth! * 0.55,
-                        decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(8),
-                            color: Colors.white.withOpacity(0.2)),
                       ),
                     );
                   },

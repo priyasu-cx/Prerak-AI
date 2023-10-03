@@ -1,12 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:prerak_ai/data/providers/message_provider.dart';
 import 'package:prerak_ai/utils/assets.dart';
 import 'package:prerak_ai/utils/size_config.dart';
 
-class ChatAppbar extends StatelessWidget {
-  const ChatAppbar({super.key});
+class ChatAppbar extends ConsumerWidget {
+  const ChatAppbar({super.key, required this.character});
+
+  final Map character;
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
     return Container(
       child: Column(
         children: [
@@ -43,13 +47,15 @@ class ChatAppbar extends StatelessWidget {
                     ),
                     onPressed: () {
                       Navigator.pop(context);
+                      // clear state
+                      ref.read(messageProvider.notifier).clear();
                     },
                   ),
                 ),
                 Column(
                   children: [
                     Text(
-                      "Actor Name (Hindi Name)",
+                      "${character["Name"]} (${character["Hindi Name"]})",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: 14,
